@@ -1,0 +1,16 @@
+fastapi[all]
+openai==0.28
+python-dotenv
+pydantic==1.*
+tiktoken
+pytesseract
+pillow
+beautifulsoup4
+requests
+langchain
+googlemaps
+crewai
+'crewai[tools]'
+unstructured
+scipy
+langchain_community
