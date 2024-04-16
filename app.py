@@ -90,7 +90,7 @@ finder_agent = Agent(
 
 
 writer_agent = Agent(
-    role='Copy Writer',
+    role='Writer',
     goal=dedent(f""""\Synthesize the data collected by your coworkers to present to the user.
     Format the output in the following format.
              Name:
