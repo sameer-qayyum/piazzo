@@ -10,7 +10,7 @@ requests
 langchain
 googlemaps
 crewai
-'crewai[tools]'
+crewai[tools]
 unstructured
 scipy
 langchain_community
