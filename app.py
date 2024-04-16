@@ -120,4 +120,19 @@ def find_venue(user_need):
 app = FastAPI()
 @app.post("/venue_finder")
 async def venue_finder(request: Request):
-  
+	form_data = await request.form()
+    	input_prompt = form_data.get('user_prompt')
+    	user_id = form_data.get('user_id')
+  	task1 = BookingTasks.find_venues_task(agent=finder_agent,user_need=input_prompt)
+
+	task2 = writer(agent=writer_agent)
+	# Initialize the crew with tasks
+	crew = Crew(
+	    agents=[finder_agent, writer_agent],
+	    tasks=[task1, task2],
+	    verbose=False
+	)
+	
+	# Execute the crew
+	result = crew.kickoff()
+	return {"text": results, "unique_id": user_id}
