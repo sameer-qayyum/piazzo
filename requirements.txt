@@ -1,5 +1,5 @@
 fastapi[all]
-openai==0.28
+openai
 python-dotenv
 pydantic==1.*
 tiktoken
