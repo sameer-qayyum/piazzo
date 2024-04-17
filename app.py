@@ -106,6 +106,46 @@ writer_agent = Agent(
     llm=OpenAIGPT35
 )
 
+#TASKS
+class BookingTasks:
+    def find_venues_task(agent, user_need):
+        return Task(
+            description=dedent(f"""
+                Search and discover at least 10 results for user query: {user_need}.
+                You should identify places with great reviews, are trendy and have not permanently closed. The year is 2024.
+            """),
+            expected_output=dedent(f"""
+                For at least 10 places, find the following information:
+                Name:
+                Address:
+                Reviews:
+                Recent Reviews:
+                Phone Number:
+                Booking Process:
+            """),
+            agent=agent
+        )
+
+def writer(agent):
+    return Task(
+        description=dedent(f"""
+            You will consolidate all the data and format it in an easily understandable form.
+        """),
+        expected_output=dedent(f"""
+            Print out what your coworkers have found.
+            The output should be easily parsable and have enough information for the user to make an informed decision.
+            Follow this output template:
+
+            Name:
+            Address:
+            Reviews:
+            Recent Reviews:
+            Phone Number:
+            Booking Process:
+        """),
+        agent=agent
+    )
+
 def find_venue(user_need):
   task1 = BookingTasks.find_venues_task(agent=finder_agent,user_need=user_need)
   task2 = writer(agent=writer_agent)
