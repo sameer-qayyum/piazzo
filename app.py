@@ -18,6 +18,7 @@ from langchain_community.chat_models import ChatPerplexity
 from langchain_core.prompts import ChatPromptTemplate
 from crewai_tools import WebsiteSearchTool
 from langchain_community.utilities import TextRequestsWrapper
+from fastapi import FastAPI, HTTPException, Request
 requests_get = TextRequestsWrapper()
 OpenAIGPT35 = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.5)
 #TOOLS
