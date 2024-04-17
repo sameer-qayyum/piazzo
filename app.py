@@ -19,7 +19,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from crewai_tools import WebsiteSearchTool
 from langchain_community.utilities import TextRequestsWrapper
 requests_get = TextRequestsWrapper()
-
+OpenAIGPT35 = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.5)
 #TOOLS
 # To enable the tool to search any website the agent comes across or learns about during its operation
 website_tool = WebsiteSearchTool()
