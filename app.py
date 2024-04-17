@@ -19,7 +19,7 @@ from langchain_community.chat_models import ChatPerplexity
 from langchain_core.prompts import ChatPromptTemplate
 from crewai_tools import WebsiteSearchTool
 from langchain_community.utilities import TextRequestsWrapper
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 requests_get = TextRequestsWrapper()
 OpenAIGPT35 = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.5)
 #TOOLS
@@ -209,24 +209,19 @@ def send_to_bubble(webhook_url, data):
         print("Data sent successfully to Bubble.io")
     else:
         print("Failed to send data", response.status_code, response.text)
-
-app = FastAPI()
-@app.post("/venue_finder")
-async def venue_finder(request: Request):
-    form_data = await request.form()
-    input_prompt = form_data.get('user_prompt')
-    user_id = form_data.get('user_id')
-    task1 = BookingTasks.find_venues_task(agent=finder_agent, user_need=input_prompt)
+def process_data_in_background(user_prompt, user_id):
+    task1 = BookingTasks.find_venues_task(agent=finder_agent, user_need=user_prompt)
     task2 = writer(agent=writer_agent)
-    
-    crew = Crew(
-        agents=[finder_agent, writer_agent],
-        tasks=[task1, task2],
-        verbose=False
-    )
-    
+    crew = Crew(agents=[finder_agent, writer_agent], tasks=[task1, task2], verbose=False)
     result = crew.kickoff()
     venues = process_venues(result)
     webhook_url = "https://piazzov1.bubbleapps.io/version-test/api/1.1/wf/receive_venues/initialize"
     send_to_bubble(webhook_url, venues)
-    return {"status": "Data sent successfully", "unique_id": user_id}
+
+@app.post("/venue_finder")
+async def venue_finder(request: Request, background_tasks: BackgroundTasks):
+    form_data = await request.form()
+    user_prompt = form_data.get('user_prompt')
+    user_id = form_data.get('user_id')
+    background_tasks.add_task(process_data_in_background, user_prompt, user_id)
+    return {"message": "Processing started, we will notify you once done."}
