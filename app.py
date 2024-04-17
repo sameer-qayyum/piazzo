@@ -217,7 +217,7 @@ def process_data_in_background(user_prompt, user_id):
     venues = process_venues(result)
     webhook_url = "https://piazzov1.bubbleapps.io/version-test/api/1.1/wf/receive_venues/initialize"
     send_to_bubble(webhook_url, venues)
-
+app = FastAPI()
 @app.post("/venue_finder")
 async def venue_finder(request: Request, background_tasks: BackgroundTasks):
     form_data = await request.form()
