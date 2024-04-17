@@ -210,9 +210,6 @@ def send_to_bubble(webhook_url, data):
     else:
         print("Failed to send data", response.status_code, response.text)
 
-# Webhook URL you configured in Bubble.io
-webhook_url = 'https://yourbubbleapp.bubbleapps.io/version-test/api/1.1/wf/your_endpoint'
-
 app = FastAPI()
 @app.post("/venue_finder")
 async def venue_finder(request: Request):
@@ -230,6 +227,6 @@ async def venue_finder(request: Request):
     
     result = crew.kickoff()
     venues = process_venues(result)
-    webhook_url = "https://yourbubbleapp.bubbleapps.io/version-test/api/1.1/wf/your_endpoint"
+    webhook_url = "https://piazzov1.bubbleapps.io/version-test/api/1.1/wf/receive_venues/initialize"
     send_to_bubble(webhook_url, venues)
     return {"status": "Data sent successfully", "unique_id": user_id}
