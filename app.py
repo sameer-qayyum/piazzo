@@ -4,6 +4,7 @@ from crewai_tools import SerperDevTool
 from langchain_openai import ChatOpenAI
 from langchain.tools import tool
 import requests
+import re
 #from unstructured.partition.html import partition_html
 import json
 from bs4 import BeautifulSoup
@@ -163,6 +164,55 @@ def find_venue(user_need):
   result = crew.kickoff()
   return result
 
+
+def parse_venue_info(venue_text):
+    venue_info = {}
+    # Define patterns for extraction
+    patterns = {
+        'name': r"Name:\s*(.*)",
+        'address': r"Address:\s*(.*)",
+        'reviews': r"Reviews:\s*(.*)",
+        'recent_reviews': r"Recent Reviews:\s*(.*)",
+        'phone_number': r"Phone Number:\s*(.*)",
+        'booking_process': r"Booking Process:\s*(.*)"
+    }
+
+    for key, pattern in patterns.items():
+        match = re.search(pattern, venue_text, re.IGNORECASE)
+        if match:
+            venue_info[key] = match.group(1).strip()
+        else:
+            venue_info[key] = "Not provided"  # or any other default value
+
+    return venue_info
+
+def process_venues(data_string):
+    venues = []
+    # Assuming each venue block is separated by a blank line
+    venue_blocks = data_string.strip().split("\n\n")
+    for block in venue_blocks:
+        venue_info = parse_venue_info(block)
+        venues.append(venue_info)
+    return venues
+
+
+def send_to_bubble(webhook_url, data):
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    # Convert the list of dictionaries to a JSON string
+    payload = json.dumps({"venues": data})
+    
+    response = requests.post(webhook_url, headers=headers, data=payload)
+    
+    if response.status_code == 200:
+        print("Data sent successfully to Bubble.io")
+    else:
+        print("Failed to send data", response.status_code, response.text)
+
+# Webhook URL you configured in Bubble.io
+webhook_url = 'https://yourbubbleapp.bubbleapps.io/version-test/api/1.1/wf/your_endpoint'
+
 app = FastAPI()
 @app.post("/venue_finder")
 async def venue_finder(request: Request):
@@ -170,15 +220,16 @@ async def venue_finder(request: Request):
     input_prompt = form_data.get('user_prompt')
     user_id = form_data.get('user_id')
     task1 = BookingTasks.find_venues_task(agent=finder_agent, user_need=input_prompt)
-
     task2 = writer(agent=writer_agent)
-    # Initialize the crew with tasks
+    
     crew = Crew(
         agents=[finder_agent, writer_agent],
         tasks=[task1, task2],
         verbose=False
     )
     
-    # Execute the crew
     result = crew.kickoff()
-    return {"text": result, "unique_id": user_id}
+    venues = process_venues(result)
+    webhook_url = "https://yourbubbleapp.bubbleapps.io/version-test/api/1.1/wf/your_endpoint"
+    send_to_bubble(webhook_url, venues)
+    return {"status": "Data sent successfully", "unique_id": user_id}
