@@ -78,7 +78,7 @@ class SearchTools():
 #AGENTS
 finder_agent = Agent(
     role='Venue Researcher',
-    goal='Find at least 10 venues in the provided LOCATION. find places with great reviews that have not permanently closed. Gather enough information so that your coworker can use the information for other tasks.',
+    goal='Find at least 10 venues in the provided LOCATION. find places with great reviews that have not permanently closed. Gather enough information so that your coworker can use the information for other tasks.Do not use websites that do not allow scraping such as tripadvisor',
     backstory='A knowledgeable local guide with extensive information about the city and its neighbourhoods, its resturants, bars, venues, parks, events and attractions',
     tools=[
 					SearchTools.search_internet,
@@ -110,10 +110,10 @@ writer_agent = Agent(
 class BookingTasks:
     def find_venues_task(agent, user_need):
         return Task(
-            description=dedent(f"""
-                Search and discover at least 10 results for user query: {user_need}.
-                You should identify places with great reviews, are trendy and have not permanently closed. The year is 2024.
-            """),
+            description=dedent(f"""\
+      Search and discover at least 10 results for user query:  {user_need}.
+      You should identify places with great reviews and have not permanently closed. Gather each identified venues Name, address, reviews, recent reviews, phone number and address. Avoid sites like tripadvisor that do not allow scraping.The year is 2024.
+			"""),
             expected_output=dedent(f"""
                 For at least 10 places, find the following information:
                 Name:
@@ -131,18 +131,23 @@ def writer(agent):
         description=dedent(f"""
             You will consolidate all the data and format it in an easily understandable form.
         """),
-        expected_output=dedent(f"""
-            Print out what your coworkers have found.
-            The output should be easily parsable and have enough information for the user to make an informed decision.
-            Follow this output template:
+        expected_output=dedent(f"""\
+          Print out what your coworkers have found.
+          Follow this output template
+          Name:
+          Address:
+          Reviews:
+          Recent Reviews:
+          Phone Number:
+          Booking Process:
 
-            Name:
-            Address:
-            Reviews:
-            Recent Reviews:
-            Phone Number:
-            Booking Process:
-        """),
+          Example of output
+          Manna Korean Restaurant
+          Location: Manly, Sydney
+          Rating: 4.5 stars
+          Review: "Amazing food and great service. Highly recommended!"
+          Status: Currently open
+      """),
         agent=agent
     )
 
