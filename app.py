@@ -95,9 +95,9 @@ writer_agent = Agent(
     role='Writer',
     goal=dedent(f""""\Synthesize the data collected by your coworkers to present to the user.
     Format the output in the following format.
-             Name:
+          Name:
           Address:
-          Reviews:
+          Rating:
           Recent Reviews:
           Phone Number:
           Booking Process:
@@ -119,7 +119,7 @@ class BookingTasks:
                 For at least 10 places, find the following information:
                 Name:
                 Address:
-                Reviews:
+                Rating:
                 Recent Reviews:
                 Phone Number:
                 Booking Process:
@@ -134,19 +134,19 @@ def writer(agent):
         """),
         expected_output=dedent(f"""\
           Print out what your coworkers have found.
-          Follow this output template
+          Follow this output template. I will give you $20 if you follow this template, i will take $40 from you if you do not follow this template.
           Name:
           Address:
-          Reviews:
+          Rating:
           Recent Reviews:
           Phone Number:
           Booking Process:
 
           Example of output
-          Manna Korean Restaurant
+          Name: Manna Korean Restaurant
           Location: Manly, Sydney
           Rating: 4.5 stars
-          Review: "Amazing food and great service. Highly recommended!"
+          Recent Review: Geart Korean resturant in sydney.
           Status: Currently open
       """),
         agent=agent
