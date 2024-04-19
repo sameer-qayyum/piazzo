@@ -167,20 +167,21 @@ def find_venue(user_need):
 
 def parse_venue_info(venue_text):
     venue_info = {}
-    # Define patterns for extraction
+    # Define patterns for extraction, allowing for variations in formatting
     patterns = {
-        'name': r"Name:\s*(.*)",
-        'address': r"Address:\s*(.*)",
-        'reviews': r"Reviews:\s*(.*)",
-        'recent_reviews': r"Recent Reviews:\s*(.*)",
-        'phone_number': r"Phone Number:\s*(.*)",
-        'booking_process': r"Booking Process:\s*(.*)"
+        'name': r"[Nn]ame:\s*(.+)",
+        'address': r"[Aa]ddress:\s*(.+)",
+        'reviews': r"[Rr]eviews:\s*(.+)",
+        'recent_reviews': r"[Rr]ecent [Rr]eviews:\s*(.+)",
+        'phone_number': r"[Pp]hone [Nn]umber:\s*(.+)",
+        'booking_process': r"[Bb]ooking [Pp]rocess:\s*(.+)"
     }
 
     for key, pattern in patterns.items():
-        match = re.search(pattern, venue_text, re.IGNORECASE)
+        match = re.search(pattern, venue_text)
         if match:
-            venue_info[key] = match.group(1).strip()
+            # Take everything up to the end of the line or until a newline character
+            venue_info[key] = match.group(1).split('\n')[0].strip()
         else:
             venue_info[key] = "Not provided"  # or any other default value
 
@@ -215,7 +216,7 @@ def process_data_in_background(user_prompt, user_id):
     crew = Crew(agents=[finder_agent, writer_agent], tasks=[task1, task2], verbose=False)
     result = crew.kickoff()
     venues = process_venues(result)
-    webhook_url = "https://piazzov1.bubbleapps.io/version-test/api/1.1/wf/receive_venues"
+    webhook_url = "https://piazzov1.bubbleapps.io/api/1.1/wf/receive_venues"
     send_to_bubble(webhook_url, venues)
 app = FastAPI()
 @app.post("/venue_finder")
