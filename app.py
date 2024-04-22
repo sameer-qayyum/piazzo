@@ -219,10 +219,8 @@ def process_data_in_background(user_prompt, user_id):
     result = crew.kickoff()
     venues = process_venues(result, user_prompt)
     # Uncomment the following line if you are working with the live environment
-    # webhook_url = "https://piazzov1.bubbleapps.io/api/1.1/wf/receive_venues"
+    webhook_url = "https://piazzov1.bubbleapps.io/api/1.1/wf/receive_venues"
     
-    # Use the following URL for the development environment
-    webhook_url = "https://piazzov1.bubbleapps.io/version-test/api/1.1/wf/receive_venues/initialize"
     
     send_to_bubble(webhook_url, venues)
 
