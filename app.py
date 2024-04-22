@@ -218,8 +218,14 @@ def process_data_in_background(user_prompt, user_id):
     crew = Crew(agents=[finder_agent, writer_agent], tasks=[task1, task2], verbose=False)
     result = crew.kickoff()
     venues = process_venues(result, user_prompt)
-    webhook_url = "https://piazzov1.bubbleapps.io/api/1.1/wf/receive_venues"
+    # Uncomment the following line if you are working with the live environment
+    # webhook_url = "https://piazzov1.bubbleapps.io/api/1.1/wf/receive_venues"
+    
+    # Use the following URL for the development environment
+    webhook_url = "https://piazzov1.bubbleapps.io/version-test/api/1.1/wf/receive_venues/initialize"
+    
     send_to_bubble(webhook_url, venues)
+
 app = FastAPI()
 @app.post("/venue_finder")
 async def venue_finder(request: Request, background_tasks: BackgroundTasks):
