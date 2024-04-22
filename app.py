@@ -187,12 +187,13 @@ def parse_venue_info(venue_text):
 
     return venue_info
 
-def process_venues(data_string):
+def process_venues(data_string, user_prompt):
     venues = []
     # Assuming each venue block is separated by a blank line
     venue_blocks = data_string.strip().split("\n\n")
     for block in venue_blocks:
         venue_info = parse_venue_info(block)
+	venue_info['user_prompt'] = user_prompt
         venues.append(venue_info)
     return venues
 
@@ -215,7 +216,7 @@ def process_data_in_background(user_prompt, user_id):
     task2 = writer(agent=writer_agent)
     crew = Crew(agents=[finder_agent, writer_agent], tasks=[task1, task2], verbose=False)
     result = crew.kickoff()
-    venues = process_venues(result)
+    venues = process_venues(result, user_prompt)
     webhook_url = "https://piazzov1.bubbleapps.io/api/1.1/wf/receive_venues"
     send_to_bubble(webhook_url, venues)
 app = FastAPI()
