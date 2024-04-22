@@ -193,9 +193,10 @@ def process_venues(data_string, user_prompt):
     venue_blocks = data_string.strip().split("\n\n")
     for block in venue_blocks:
         venue_info = parse_venue_info(block)
-	venue_info['user_prompt'] = user_prompt
+        venue_info['user_prompt'] = user_prompt  # This line should be indented to align with the line above
         venues.append(venue_info)
     return venues
+
 
 
 def send_to_bubble(webhook_url, data):
